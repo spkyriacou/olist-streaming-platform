@@ -218,3 +218,23 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local credentials and configuration
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+__pycache__/
+
+# Terraform working files, state and plans
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+!*.tfvars.example
+
+# Downloaded datasets
+data/
