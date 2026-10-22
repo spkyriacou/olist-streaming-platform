@@ -16,7 +16,7 @@ jobs:
       - name: Authenticate to AWS
         uses: aws-actions/configure-aws-credentials@v6.3.0
         with:
-          role-to-assume: PASTE-YOUR-ROLE-ARN-HERE
+          role-to-assume: arn:aws:iam::652546415579:role/olist-github-terraform
           aws-region: eu-west-2
           retry-max-attempts: 2
 
