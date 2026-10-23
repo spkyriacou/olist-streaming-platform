@@ -22,7 +22,7 @@ resource "aws_iam_role" "github_terraform" {
       Condition = {
         StringEquals = {
           "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
-          "token.actions.githubusercontent.com:sub" = "repo:spkyriacou/olist-streaming-platform:ref:refs/heads/main"
+          "token.actions.githubusercontent.com:sub" = "repo:spkyriacou@170625507/olist-streaming-platform@1428494757:ref:refs/heads/main"
         }
       }
     }]
