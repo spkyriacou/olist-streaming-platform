@@ -1,0 +1,49 @@
+name: Terraform Deployment
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: terraform-olist-dev
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    name: Plan infrastructure
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.ref == 'refs/heads/main'
+
+    defaults:
+      run:
+        working-directory: infrastructure/terraform
+
+    steps:
+      - name: Download repository
+        uses: actions/checkout@v4
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v4
+
+      - name: Authenticate to AWS
+        uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: arn:aws:iam::652546415579:role/olist-github-terraform
+          aws-region: eu-west-2
+          retry-max-attempts: 2
+
+      - name: Check formatting
+        run: terraform fmt -check -recursive
+
+      - name: Initialise Terraform with S3 state
+        run: terraform init -input=false -lockfile=readonly
+
+      - name: Validate configuration
+        run: terraform validate -no-color
+
+      - name: Plan infrastructure
+        run: terraform plan -input=false -no-color -lock-timeout=60s
