@@ -2,6 +2,12 @@ name: Terraform Deployment
 
 on:
   workflow_dispatch:
+    inputs:
+      apply_changes:
+        description: "Apply infrastructure changes to AWS"
+        type: boolean
+        required: true
+        default: false
 
 permissions:
   contents: read
@@ -46,4 +52,8 @@ jobs:
         run: terraform validate -no-color
 
       - name: Plan infrastructure
-        run: terraform plan -input=false -no-color -lock-timeout=60s
+        run: terraform plan -input=false -no-color -lock-timeout=60s -out=tfplan
+
+      - name: Apply infrastructure
+        if: ${{ inputs.apply_changes }}
+        run: terraform apply -input=false -no-color -lock-timeout=60s tfplan
