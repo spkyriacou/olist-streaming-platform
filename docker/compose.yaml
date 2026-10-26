@@ -1,0 +1,36 @@
+name: olist
+
+services:
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: olist
+      POSTGRES_USER: olist_admin
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+
+    command:
+      - postgres
+      - -c
+      - wal_level=logical
+      - -c
+      - max_replication_slots=4
+      - -c
+      - max_wal_senders=4
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U olist_admin -d olist"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+    logging:
+      driver: local
+
+volumes:
+  postgres_data:

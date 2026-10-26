@@ -238,3 +238,8 @@ __pycache__/
 
 # Downloaded datasets
 data/
+
+# Keeps real passwords out of git while allowing us to commit an example file
+.env
+.env.*
+!.env.example
