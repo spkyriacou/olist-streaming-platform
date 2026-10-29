@@ -1,0 +1,32 @@
+name: Database migrations
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: olist-dev-database-migrations
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Download repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate to AWS
+        uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: arn:aws:iam::652546415579:role/olist-github-terraform
+          aws-region: eu-west-2
+          retry-max-attempts: 2
+
+      - name: Apply database migrations through Systems Manager
+        run: python3 scripts/deploy_migrations.py
