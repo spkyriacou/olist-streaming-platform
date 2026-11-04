@@ -1,6 +1,29 @@
 name: olist
 
 services:
+
+  loader:
+    build:
+      context: ../services/loader
+
+    profiles: ["tools"]
+
+    environment:
+      AWS_DEFAULT_REGION: eu-west-2
+      S3_BUCKET: olist-streaming-473c7de2906e4ce024aaeba19f
+      S3_PREFIX: raw/olist/
+      PGHOST: postgres
+      PGDATABASE: olist
+      PGUSER: olist_admin
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    logging:
+      driver: local
+
   postgres:
     image: postgres:17
     restart: unless-stopped
