@@ -71,6 +71,15 @@ printf '%s' '{payload}' | base64 --decode | tar -xz -C "$release_dir"
 
 cd "$release_dir"
 
+mkdir -p /usr/local/lib/docker/cli-plugins
+
+curl -fSL --retry 3 \\
+  https://github.com/docker/buildx/releases/download/v0.30.1/buildx-v0.30.1.linux-amd64 \\
+  -o /usr/local/lib/docker/cli-plugins/docker-buildx
+
+chmod +x /usr/local/lib/docker/cli-plugins/docker-buildx
+
+docker buildx version
 docker compose \\
   --project-name olist \\
   --env-file /opt/olist/.env \\
