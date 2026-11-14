@@ -1,0 +1,42 @@
+name: olist-streaming
+
+services:
+  kafka:
+    image: apache/kafka:4.1.1
+    restart: unless-stopped
+    environment:
+      KAFKA_NODE_ID: "1"
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+    volumes:
+      - kafka_data:/tmp/kraft-combined-logs
+
+  connect:
+    image: quay.io/debezium/connect:3.4
+    restart: unless-stopped
+    environment:
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: olist-connect
+      CONFIG_STORAGE_TOPIC: olist_connect_configs
+      OFFSET_STORAGE_TOPIC: olist_connect_offsets
+      STATUS_STORAGE_TOPIC: olist_connect_status
+      CONFIG_STORAGE_REPLICATION_FACTOR: "1"
+      OFFSET_STORAGE_REPLICATION_FACTOR: "1"
+      STATUS_STORAGE_REPLICATION_FACTOR: "1"
+    depends_on:
+      - kafka
+
+networks:
+  default:
+    external: true
+    name: olist_default
+
+volumes:
+  kafka_data:
